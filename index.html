@@ -41,15 +41,14 @@
             color: var(--white);
         }
 
-        /* SEARCH BAR STYLING - DIPERBAIKI SUPAYA TENGAH */
         .search-container {
             margin-bottom: 30px;
             display: flex;
-            justify-content: center; /* Memastikan input berada di tengah secara horizontal */
+            justify-content: center;
         }
 
         .search-container input {
-            width: 100%; /* Mengisi area sidebar yang tersisa setelah padding */
+            width: 100%;
             padding: 12px;
             border-radius: 8px;
             border: 1px solid #333;
@@ -60,9 +59,7 @@
             transition: 0.3s;
         }
 
-        .search-container input:focus {
-            border-color: var(--accent-pink);
-        }
+        .search-container input:focus { border-color: var(--accent-pink); }
 
         .nav-links-sidebar { list-style: none; padding: 0; }
         .nav-links-sidebar li { margin-bottom: 22px; }
@@ -75,7 +72,7 @@
         }
         .nav-links-sidebar a:hover, .nav-links-sidebar a.active { color: var(--accent-pink); }
 
-        /* MAIN CONTENT - HOME STYLING */
+        /* MAIN CONTENT */
         .main-content {
             margin-left: 280px;
             flex-grow: 1;
@@ -111,18 +108,96 @@
         }
         .social-btn:hover { background: var(--accent-pink); border-color: var(--accent-pink); transform: translateY(-5px); }
 
+        /* FLOATING CHAT WIDGET - DIPINDAHKAN KE KIRI (SIDEBAR) */
+        #chat-widget-container {
+            position: fixed;
+            bottom: 30px;
+            left: 25px; /* Menempel di lebar sidebar */
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 230px; /* Disesuaikan dengan lebar sidebar */
+        }
+
+        .chat-trigger-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--accent-pink);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: 0.3s;
+            font-size: 1.2rem;
+            border: none;
+            outline: none;
+        }
+
+        .chat-trigger-btn:hover { transform: scale(1.1); }
+
+        .contact-card-floating {
+            display: none; 
+            backdrop-filter: blur(20px);
+            background: rgba(30, 30, 30, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 250px;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: left;
+        }
+
+        .contact-card-floating h3 { margin: 0 0 5px 0; font-size: 1rem; color: var(--accent-pink); }
+        .contact-card-floating p { font-size: 0.75rem; margin-bottom: 12px; color: #bbb; line-height: 1.4; }
+
+        .contact-card-floating input, .contact-card-floating textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-size: 0.8rem;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .contact-card-floating input:focus, .contact-card-floating textarea:focus { border-color: var(--accent-pink); }
+
+        .submit-btn {
+            width: 100%;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            background: var(--accent-pink);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.8rem;
+        }
+
+        .submit-btn:hover { background: #8e745c; }
+
         @media (max-width: 1100px) {
             body { flex-direction: column; }
             .sidebar { width: 100%; height: auto; position: relative; padding: 30px; }
             .main-content { margin-left: 0; max-width: 100%; height: 80vh; }
             .home-content h1 { font-size: 2.5rem; }
+            #chat-widget-container { bottom: 20px; left: 20px; } /* Tetap di kiri meski mobile */
         }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <h2>Dirlly's<br>Project Site</h2>
+        <h2>Dirlly's<br>Creative Site</h2>
         
         <div class="search-container">
             <input type="text" id="searchInput" onkeyup="searchProject()" placeholder="Search for projects...">
@@ -132,11 +207,26 @@
             <li class="search-item"><a href="index.html" class="active">Home</a></li>
             <li class="search-item"><a href="clock.html">Modern ESP32 Clock</a></li>
         </ul>
+
+        <div id="chat-widget-container">
+            <div class="contact-card-floating" id="chatBox">
+                <h3>Chat with Me</h3>
+                <p>If you have any questions, hit me up on mail!</p>
+                <form action="https://formspree.io/f/xjgvgvvk" method="POST">
+                    <input type="text" name="name" placeholder="Your Name" required>
+                    <input type="email" name="email" placeholder="Your Email" required>
+                    <textarea name="message" rows="3" placeholder="Your Message..." required></textarea>
+                    <button type="submit" class="submit-btn">Kirim Pesan</button>
+                </form>
+            </div>
+
+            <button class="chat-trigger-btn" onclick="toggleChat()" id="chatBtn">💬</button>
+        </div>
     </div>
 
     <div class="main-content">
         <div class="home-content">
-            <h1>Welcome to My Projects</h1>
+            <h1>Welcome to My Creative Site</h1>
             <p>Electronics. Code. Minimalist Design.</p>
             <div class="social-links">
                 <a href="https://instagram.com/noturbott" target="_blank" class="social-btn">Instagram</a>
@@ -149,20 +239,23 @@
     <script>
         function searchProject() {
             let input = document.getElementById('searchInput').value.toLowerCase();
-            
-            // Mengambil semua elemen li dengan class search-item
             let listItems = document.querySelectorAll('.search-item');
-
             listItems.forEach(item => {
                 let projectName = item.innerText.toLowerCase();
-                
-                // Jika input ada di dalam nama project, tampilkan, jika tidak, sembunyikan
-                if (projectName.includes(input)) {
-                    item.style.display = ""; 
-                } else {
-                    item.style.display = "none"; 
-                }
+                item.style.display = projectName.includes(input) ? "" : "none";
             });
+        }
+
+        function toggleChat() {
+            const chatBox = document.getElementById('chatBox');
+            const chatBtn = document.getElementById('chatBtn');
+            if (chatBox.style.display === "none" || chatBox.style.display === "") {
+                chatBox.style.display = "block";
+                chatBtn.innerHTML = "×";
+            } else {
+                chatBox.style.display = "none";
+                chatBtn.innerHTML = "💬";
+            }
         }
     </script>
 
