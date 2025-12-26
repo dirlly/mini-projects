@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern ESP32 Clock - Dirlly</title>
+    <style>
+        :root {
+            --bg-dark: #121212;       
+            --bg-content: #f0f2f5;    
+            --white: #ffffff;
+            --text-main: #1a1a1a;
+            --text-light: #ffffff;
+            --text-dim: #65676b;
+            --accent-chocolate: #8b5a2b; 
+            --accent-pink: #a3876c;   
+            --card-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            --border-light: #e0e4e9;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+            background-color: var(--bg-content);
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            padding: 40px 25px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-sizing: border-box;
+            z-index: 100;
+        }
+
+        .sidebar h2 { 
+            font-size: 1.4rem; 
+            font-weight: 600; 
+            margin-bottom: 50px; 
+            line-height: 1.3;
+            color: var(--white);
+        }
+
+        .nav-links-sidebar { list-style: none; padding: 0; }
+        .nav-links-sidebar li { margin-bottom: 22px; }
+        .nav-links-sidebar a { 
+            color: var(--text-light); 
+            text-decoration: none; 
+            font-size: 1rem; 
+            transition: 0.3s; 
+            font-weight: 300;
+        }
+        .nav-links-sidebar a:hover, .nav-links-sidebar a.active { color: var(--accent-pink); }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 280px;
+            flex-grow: 1;
+            padding: 60px;
+            box-sizing: border-box;
+            max-width: calc(100% - 280px);
+            min-height: 100vh;
+        }
+
+        header {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            border-left: 6px solid var(--accent-chocolate);
+        }
+
+        header h1 { margin: 0; font-size: 2.2rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text-main); }
+        .intro-text { margin-top: 15px; font-size: 1.1rem; color: var(--text-dim); font-weight: 300; }
+
+        .video-card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+            background: #000;
+        }
+
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+        .top-info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+        h2.section-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent-chocolate);
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .feature-list, .library-list { list-style: none; padding: 0; margin: 0; }
+        .feature-list li, .library-list li { padding: 8px 0; color: var(--text-main); font-weight: 400; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem; }
+        .library-list li { color: var(--text-dim); font-family: monospace; }
+
+        .btn-group { display: flex; flex-direction: column; gap: 10px; }
+        .btn {
+            padding: 12px; text-decoration: none; border-radius: 6px;
+            font-size: 0.8rem; text-align: center; text-transform: uppercase;
+            letter-spacing: 0.1em; font-weight: 600; transition: 0.3s;
+        }
+        .btn-primary { background: var(--accent-chocolate); color: #fff; }
+        .btn-outline { border: 1px solid var(--accent-chocolate); color: var(--accent-chocolate); }
+
+        .parts-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .shop-scroll-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 15px;
+            max-height: 400px; 
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .shop-scroll-list::-webkit-scrollbar { width: 4px; }
+        .shop-scroll-list::-webkit-scrollbar-thumb { background: var(--accent-chocolate); border-radius: 10px; }
+
+        .product-row {
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            transition: 0.2s;
+            border: 1px solid transparent;
+            text-decoration: none;
+        }
+
+        .product-row:hover { transform: translateY(-3px); border-color: var(--accent-chocolate); background: white; box-shadow: var(--card-shadow); }
+        .product-details { flex-grow: 1; }
+        .product-details p { margin: 0; color: var(--text-main); font-size: 0.9rem; font-weight: 600; }
+        .product-details span { font-size: 0.65rem; color: var(--accent-chocolate); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 2px; }
+        .buy-link { font-size: 1.2rem; color: #d1d5db; margin-left: 10px; }
+
+        footer { text-align: center; margin-top: 80px; padding-bottom: 40px; color: var(--text-dim); font-size: 0.85rem; }
+
+        @media (max-width: 1100px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: relative; padding: 30px; }
+            .main-content { margin-left: 0; padding: 30px; max-width: 100%; }
+            .top-info-grid { grid-template-columns: 1fr; }
+            .shop-scroll-list { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Dirlly's<br>Project Site</h2>
+        <ul class="nav-links-sidebar">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="clock.html" class="active">Modern ESP32 Clock</a></li>
+        </ul>
+    </div>
+
+    <div id="project-section" class="main-content">
+        <header>
+            <h1>Modern Clock</h1>
+            <div class="intro-text">
+                This is a mini project exploring a modern digital clock built with an ESP32. Inspired by Huy Vector, this build prioritizes simplicity and the honest display of electronic components.
+            </div>
+        </header>
+
+        <div class="video-card">
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/2nH26UgbeFI" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <div class="top-info-grid">
+            <div class="info-card">
+                <h2 class="section-title">Features</h2>
+                <ul class="feature-list">
+                    <li>- Precision Timekeeping</li>
+                    <li>- Temperature Monitoring</li>
+                    <li>- Day & Date Teller</li>
+                    <li>- Customizable Alarm</li>
+                </ul>
+            </div>
+
+            <div class="info-card">
+                <h2 class="section-title">Project Files</h2>
+                <div class="btn-group">
+                    <a href="wiring_diagram.png" class="btn btn-outline" download>Wiring Map</a>
+                    <a href="clock_code.ino" class="btn btn-primary" download>Source Code</a>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h2 class="section-title">Library Need</h2>
+                <ul class="library-list">
+                    <li>Wire.h</li>
+                    <li>RTClib.h</li>
+                    <li>Adafruit_GFX.h</li>
+                    <li>Adafruit_SSD1306.h</li>
+                    <li>TM1637Display.h</li>
+                    <li>Adafruit_SHT31.h</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="parts-card">
+            <h2 class="section-title">Parts Used</h2>
+            <div class="shop-scroll-list">
+                <a href="https://shopee.co.id/product/33163306/26251085707" target="_blank" class="product-row">
+                    <div class="product-details"><span>Microcontroller</span><p>ESP32 DOIT V1 (Type C)</p></div>
+                    <div class="buy-link">›</div>
+                </a>
+                <a href="https://shopee.co.id/product/62956347/21034848751" target="_blank" class="product-row">
+                    <div class="product-details"><span>Shield</span><p>Base Expansion for ESP32</p></div>
+                    <div class="buy-link">›</div>
+                </a>
+                <a href="https://shopee.co.id/product/62956347/12752920798" target="_blank" class="product-row">
+                    <div class="product-details"><span>Display</span><p>0.91 OLED I2C Display</p></div>
+                    <div class="buy-link">›</div>
+                </a>
+                <a href="https://shopee.co.id/product/231293852/7589983713" target="_blank" class="product-row">
+                    <div class="product-details"><span>Numeric</span><p>7 Segment 4-Digits</p></div>
+                    <div class="buy-link">›</div>
+                </a>
+                <a href="https://shopee.co.id/product/296626918/28533007807" target="_blank" class="product-row">
+                    <div class="product-details"><span>Power</span><p>18650 3.7V Battery</p></div>
+                    <div class="buy-link">›</div>
+                </a>
+                <a href="https://shopee.co.id/product/62956347/16597531618" target="_blank" class="product-row">
+                    <div class="product-details"><span>Holder</span><p>18650 Battery Case</p></div>
+                    <div class="buy-link">›</div>
+                </a>
+                <a href="https://shopee.co.id/product/33163306/29701085442" target="_blank" class="product-row">
+                    <div class="product-details"><span>Audio</span><p>Active Buzzer</p></div>
+                    <div class="buy-link">›</div>
+                </a>
+                <a href="https://shopee.co.id/product/76522437/41325449931" target="_blank" class="product-row">
+                    <div class="product-details"><span>Control</span><p>Power Switch</p></div>
+                    <div class="buy-link">›</div>
+                </a>
+                <a href="https://shopee.co.id/product/62956347/22510509800" target="_blank" class="product-row">
+                    <div class="product-details"><span>Wiring</span><p>Jumper Cables (20cm)</p></div>
+                    <div class="buy-link">›</div>
+                </a>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 Owned by Dirlly</p>
+        </footer>
+    </div>
+</body>
+</html>
