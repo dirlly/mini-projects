@@ -78,6 +78,81 @@
         }
         .nav-links-sidebar a:hover, .nav-links-sidebar a.active { color: var(--accent-pink); }
 
+        /* FLOATING CHAT WIDGET - SIDEBAR LEFT */
+        #chat-widget-container {
+            position: fixed;
+            bottom: 30px;
+            left: 25px; 
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 250px;
+        }
+
+        .chat-trigger-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--accent-pink);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: 0.3s;
+            font-size: 1.2rem;
+            border: none;
+            outline: none;
+        }
+
+        .chat-trigger-btn:hover { transform: scale(1.1); }
+
+        .contact-card-floating {
+            display: none; 
+            backdrop-filter: blur(20px);
+            background: rgba(30, 30, 30, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 250px;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: left;
+        }
+
+        .contact-card-floating h3 { margin: 0 0 5px 0; font-size: 1rem; color: var(--accent-pink); }
+        .contact-card-floating p { font-size: 0.75rem; margin-bottom: 12px; color: #bbb; line-height: 1.4; }
+
+        .contact-card-floating input, .contact-card-floating textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-size: 0.8rem;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .contact-card-floating input:focus, .contact-card-floating textarea:focus { border-color: var(--accent-pink); }
+
+        .submit-btn {
+            width: 100%;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            background: var(--accent-pink);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.8rem;
+        }
+
         /* MAIN CONTENT */
         .main-content {
             margin-left: 280px;
@@ -119,7 +194,7 @@
 
         .parts-card { background: white; padding: 30px; border-radius: 12px; box-shadow: var(--card-shadow); }
         
-        /* HEADER DI DALAM PARTS CARD */
+        /* HEADER DI DALAM PARTS CARD - FIX RESPONSIVE */
         .parts-header {
             display: flex;
             justify-content: space-between;
@@ -127,17 +202,20 @@
             margin-bottom: 20px;
             border-bottom: 1px solid var(--border-light);
             padding-bottom: 15px;
+            gap: 15px; /* Memberi jarak agar tidak menempel saat layar sempit */
         }
 
         .parts-search-input {
-            width: 220px;
-            padding: 8px 15px;
-            border-radius: 6px;
+            width: 100%; /* Default 100% untuk fleksibilitas */
+            max-width: 250px; /* Batas maksimal agar tidak terlalu panjang di Landscape */
+            padding: 10px 15px;
+            border-radius: 8px;
             border: 1px solid var(--border-light);
             background: #f9f9f9;
             outline: none;
             font-size: 0.85rem;
             transition: 0.3s;
+            box-sizing: border-box; /* Penting agar padding tidak menambah lebar */
         }
 
         .parts-search-input:focus { border-color: var(--accent-chocolate); background: #fff; }
@@ -155,14 +233,25 @@
 
         footer { text-align: center; margin-top: 80px; padding-bottom: 40px; color: var(--text-dim); font-size: 0.85rem; }
 
+        /* MEDIA QUERIES UNTUK RESPONSIVITAS UMUM */
         @media (max-width: 1100px) {
             body { flex-direction: column; }
             .sidebar { width: 100%; height: auto; position: relative; padding: 30px; }
             .main-content { margin-left: 0; padding: 30px; max-width: 100%; }
             .top-info-grid { grid-template-columns: 1fr; }
             .shop-scroll-list { grid-template-columns: 1fr; }
-            .parts-header { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .parts-search-input { width: 100%; }
+            #chat-widget-container { bottom: 20px; left: 20px; }
+        }
+
+        /* KHUSUS MOBILE PORTRAIT (Layar sangat sempit) */
+        @media (max-width: 600px) {
+            .parts-header {
+                flex-direction: column; /* Teks dan Search menumpuk ke bawah */
+                align-items: flex-start;
+            }
+            .parts-search-input {
+                max-width: 100%; /* Di Portrait HP, biarkan selebar kartu */
+            }
         }
     </style>
 </head>
@@ -177,6 +266,21 @@
             <li class="search-item"><a href="index.html">Home</a></li>
             <li class="search-item"><a href="clock.html" class="active">Modern ESP32 Clock</a></li>
         </ul>
+
+        <div id="chat-widget-container">
+            <div class="contact-card-floating" id="chatBox">
+                <h3>Chat with Me</h3>
+                <p>Kirim pesan ke Gmail saya. Saya akan balas secepatnya!</p>
+                <form action="https://formspree.io/f/xjgvgvvk" method="POST">
+                    <input type="text" name="name" placeholder="Nama Anda" required>
+                    <input type="email" name="email" placeholder="Email Anda" required>
+                    <textarea name="message" rows="3" placeholder="Tulis pesan..." required></textarea>
+                    <button type="submit" class="submit-btn">Kirim Pesan</button>
+                </form>
+            </div>
+
+            <button class="chat-trigger-btn" onclick="toggleChat()" id="chatBtn">💬</button>
+        </div>
     </div>
 
     <div class="main-content">
@@ -250,7 +354,7 @@
                     <div class="product-details"><span>Power</span><p>18650 3.7V Battery</p></div>
                     <div class="buy-link">›</div>
                 </a>
-                <a href="https://shopee.co.id/product/1589055419/43561875947" target="_blank" class="product-row search-part">
+                <a href="https://shopee.co.id/product/62956347/16597531618" target="_blank" class="product-row search-part">
                     <div class="product-details"><span>Holder</span><p>18650 Battery Case</p></div>
                     <div class="buy-link">›</div>
                 </a>
@@ -290,7 +394,18 @@
                 part.style.display = part.innerText.toLowerCase().includes(input) ? "" : "none";
             });
         }
+
+        function toggleChat() {
+            const chatBox = document.getElementById('chatBox');
+            const chatBtn = document.getElementById('chatBtn');
+            if (chatBox.style.display === "none" || chatBox.style.display === "") {
+                chatBox.style.display = "block";
+                chatBtn.innerHTML = "×";
+            } else {
+                chatBox.style.display = "none";
+                chatBtn.innerHTML = "💬";
+            }
+        }
     </script>
 </body>
 </html>
-
