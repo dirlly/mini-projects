@@ -36,9 +36,32 @@
         .sidebar h2 { 
             font-size: 1.4rem; 
             font-weight: 600; 
-            margin-bottom: 50px; 
+            margin-bottom: 30px; 
             line-height: 1.3;
             color: var(--white);
+        }
+
+        /* SEARCH BAR STYLING - DIPERBAIKI SUPAYA TENGAH */
+        .search-container {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center; /* Memastikan input berada di tengah secara horizontal */
+        }
+
+        .search-container input {
+            width: 100%; /* Mengisi area sidebar yang tersisa setelah padding */
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: #1e1e1e;
+            color: white;
+            font-size: 0.9rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .search-container input:focus {
+            border-color: var(--accent-pink);
         }
 
         .nav-links-sidebar { list-style: none; padding: 0; }
@@ -100,9 +123,14 @@
 
     <div class="sidebar">
         <h2>Dirlly's<br>Project Site</h2>
-        <ul class="nav-links-sidebar">
-            <li><a href="index.html" class="active">Home</a></li>
-            <li><a href="clock.html">Modern ESP32 Clock</a></li>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" onkeyup="searchProject()" placeholder="Search for projects...">
+        </div>
+
+        <ul class="nav-links-sidebar" id="projectList">
+            <li class="search-item"><a href="index.html" class="active">Home</a></li>
+            <li class="search-item"><a href="clock.html">Modern ESP32 Clock</a></li>
         </ul>
     </div>
 
@@ -118,7 +146,25 @@
         </div>
     </div>
 
+    <script>
+        function searchProject() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            
+            // Mengambil semua elemen li dengan class search-item
+            let listItems = document.querySelectorAll('.search-item');
+
+            listItems.forEach(item => {
+                let projectName = item.innerText.toLowerCase();
+                
+                // Jika input ada di dalam nama project, tampilkan, jika tidak, sembunyikan
+                if (projectName.includes(input)) {
+                    item.style.display = ""; 
+                } else {
+                    item.style.display = "none"; 
+                }
+            });
+        }
+    </script>
+
 </body>
-
 </html>
-
