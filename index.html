@@ -11,6 +11,7 @@
             --white: #ffffff;
             --text-light: #ffffff;
             --accent-pink: #a3876c;   
+            --accent-chocolate: #8b5a2b; 
         }
 
         body {
@@ -87,7 +88,7 @@
             text-align: center;
             color: white;
             background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
-                        url('mini-project-bg.png') no-repeat center center;
+                        url('shotbeachfoggyday.jpg') no-repeat center center;
             background-size: cover;
         }
 
@@ -95,6 +96,8 @@
         .home-content p { font-size: 1.2rem; font-weight: 300; margin-bottom: 40px; }
 
         .social-links { display: flex; gap: 20px; justify-content: center; width: 100%; }
+        
+        /* TOMBOL SOSMED */
         .social-btn {
             padding: 12px 25px;
             border-radius: 50px;
@@ -105,15 +108,38 @@
             backdrop-filter: blur(10px);
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: 0.3s;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
         }
-        .social-btn:hover { background: var(--accent-pink); border-color: var(--accent-pink); transform: translateY(-5px); }
 
-        /* FLOATING CHAT WIDGET - BACK TO LEFT SIDEBAR AREA */
+        /* LIQUID GLASS HOVERING (IPHONE STYLE) */
+        .social-btn:hover { 
+            transform: translateY(-5px); 
+            /* Warna cokelat transparan saat hover */
+            background: rgba(139, 90, 43, 0.45); 
+            border-color: rgba(255, 255, 255, 0.5);
+            /* Efek Kaca iOS */
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3), 
+                        inset 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        /* EFEK SAAT DITEKAN (INTENSE LIQUID) */
+        .social-btn:active {
+            transform: scale(0.94);
+            background: rgba(139, 90, 43, 0.7) !important; 
+            backdrop-filter: blur(8px) saturate(200%);
+            -webkit-backdrop-filter: blur(8px) saturate(200%);
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
+            transition: 0.1s;
+        }
+
+        /* FLOATING CHAT WIDGET */
         #chat-widget-container {
             position: fixed;
             bottom: 30px;
-            left: 25px; /* Menempel di lebar sidebar kembali */
+            left: 25px; 
             z-index: 1000;
             display: flex;
             flex-direction: column;
@@ -150,14 +176,11 @@
             width: 250px;
             margin-bottom: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            text-align: center; /* Memastikan teks judul & paragraf di tengah */
+            text-align: center;
             flex-direction: column;
             align-items: center;
             box-sizing: border-box;
         }
-
-        .contact-card-floating h3 { margin: 0 0 5px 0; font-size: 1rem; color: var(--accent-pink); }
-        .contact-card-floating p { font-size: 0.75rem; margin-bottom: 15px; color: #bbb; line-height: 1.4; }
 
         .submit-btn {
             width: 100%;
@@ -173,10 +196,8 @@
             text-decoration: none;
             display: block;
             box-sizing: border-box;
-            text-align: center; /* Menengahkan teks di dalam tombol */
+            text-align: center;
         }
-
-        .submit-btn:hover { background: #8e745c; transform: translateY(-2px); }
 
         @media (max-width: 1100px) {
             body { flex-direction: column; }
@@ -205,11 +226,8 @@
             <div class="contact-card-floating" id="chatBox">
                 <h3>Chat with Me</h3>
                 <p>If you have any Q's, hit me up on mail!</p>
-                <a href="mailto:dirllydaryll@gmail.com?subject=Q's%20from%20viewers%20about%20(The%20name%20of%20the%20project)" class="submit-btn">
-                    Open Mail App
-                </a>
+                <a href="mailto:dirllydaryll@gmail.com" class="submit-btn">Open Mail App</a>
             </div>
-
             <button class="chat-trigger-btn" onclick="toggleChat()" id="chatBtn">💬</button>
         </div>
     </div>
@@ -219,14 +237,44 @@
             <h1>Welcome to My Creative Site</h1>
             <p>Electronics. Code. Minimalist Design.</p>
             <div class="social-links">
-                <a href="https://instagram.com/noturbott" target="_blank" class="social-btn">Instagram</a>
-                <a href="https://youtube.com/@mofosd" target="_blank" class="social-btn">YouTube</a>
-                <a href="https://tiktok.com/@dirllyneedubb" target="_blank" class="social-btn">TikTok</a>
+                <a onclick="openApp('ig')" class="social-btn">Instagram</a>
+                <a onclick="openApp('yt')" class="social-btn">YouTube</a>
+                <a onclick="openApp('tt')" class="social-btn">TikTok</a>
             </div>
         </div>
     </div>
 
     <script>
+        function openApp(platform) {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            const isMobile = /android|iPad|iPhone|iPod/i.test(userAgent);
+
+            if (platform === 'ig') {
+                if (isMobile) {
+                    window.location.href = "instagram://user?username=noturbott";
+                    setTimeout(() => { window.location.href = "https://instagram.com/noturbott"; }, 2500);
+                } else {
+                    window.open("https://instagram.com/noturbott", "_blank");
+                }
+            } 
+            else if (platform === 'yt') {
+                if (isMobile) {
+                    window.location.href = "youtube://www.youtube.com/@mofosd";
+                    setTimeout(() => { window.location.href = "https://youtube.com/@mofosd"; }, 2500);
+                } else {
+                    window.open("https://youtube.com/@mofosd", "_blank");
+                }
+            } 
+            else if (platform === 'tt') {
+                if (isMobile) {
+                    window.location.href = "snssdk1128://user/profile/dirllyneedubb";
+                    setTimeout(() => { window.location.href = "https://tiktok.com/@dirllyneedubb"; }, 2500);
+                } else {
+                    window.open("https://tiktok.com/@dirllyneedubb", "_blank");
+                }
+            }
+        }
+
         function searchProject() {
             let input = document.getElementById('searchInput').value.toLowerCase();
             let listItems = document.querySelectorAll('.search-item');
@@ -239,13 +287,10 @@
         function toggleChat() {
             const chatBox = document.getElementById('chatBox');
             const chatBtn = document.getElementById('chatBtn');
-            // Diganti ke flex saat terbuka agar alignment center tombol bekerja sempurna
             if (chatBox.style.display === "none" || chatBox.style.display === "") {
-                chatBox.style.display = "flex"; 
-                chatBtn.innerHTML = "×";
+                chatBox.style.display = "flex"; chatBtn.innerHTML = "×";
             } else {
-                chatBox.style.display = "none";
-                chatBtn.innerHTML = "💬";
+                chatBox.style.display = "none"; chatBtn.innerHTML = "💬";
             }
         }
     </script>
